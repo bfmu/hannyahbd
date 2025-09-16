@@ -5,11 +5,8 @@ import { Howl } from 'howler';
 import { useBirthdayStore } from '@/stores/birthdayStore';
 import { Volume2, VolumeX } from 'lucide-react';
 
-interface MusicPlayerProps {
-  autoPlay?: boolean;
-}
 
-export default function MusicPlayer({ autoPlay = false }: MusicPlayerProps) {
+export default function MusicPlayer() {
   const { isPlaying, toggleMusic } = useBirthdayStore();
   const soundRef = useRef<Howl | null>(null);
 

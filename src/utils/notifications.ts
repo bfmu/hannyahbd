@@ -57,7 +57,7 @@ export const sendTelegramNotification = async (
  * Envía notificación por email usando EmailJS
  */
 export const sendEmailNotification = async (
-  templateParams: Record<string, any>,
+  templateParams: Record<string, string | number>,
   config: NotificationConfig['email']
 ): Promise<boolean> => {
   if (!config?.serviceId || !config?.templateId || !config?.publicKey) {
