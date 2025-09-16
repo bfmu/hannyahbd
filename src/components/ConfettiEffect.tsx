@@ -12,8 +12,6 @@ export default function ConfettiEffect({ trigger, onComplete }: ConfettiEffectPr
   useEffect(() => {
     if (!trigger) return;
 
-    console.log('🎊 ¡Activando confeti!'); // Debug log
-    
     const duration = 3000; // 3 segundos
     const end = Date.now() + duration;
 

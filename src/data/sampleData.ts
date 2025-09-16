@@ -54,7 +54,7 @@ Hoy celebro tu vida y la persona extraordinaria que eres. Que este nuevo año es
 export const birthdayConfig = {
   // Configura aquí la fecha del cumpleaños
   // Formato: año, mes (0-11), día, hora, minuto
-  birthdayDate: new Date(2025, 8, 16, 14, 0), // 25 de diciembre de 2024 a las 00:00
+  birthdayDate: new Date(2025, 8, 15, 14, 0), // 25 de diciembre de 2024 a las 00:00
   
   // Nombres y títulos personalizables
   recipientName: "Hannya Andrea Correa Parra",

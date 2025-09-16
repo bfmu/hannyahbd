@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles, Music, Camera } from 'lucide-react';
+import { createPortal } from 'react-dom';
 
 interface LoveMessage {
   id: number;
@@ -18,6 +19,7 @@ const LoveNotifications = ({ isVisible = true }: { isVisible?: boolean }) => {
   const [shuffledMessages, setShuffledMessages] = useState<(Omit<LoveMessage, 'id' | 'delay'> & { originalIndex: number })[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [hideTimer, setHideTimer] = useState<NodeJS.Timeout | null>(null);
 
   // Detectar si estamos en móvil
@@ -29,6 +31,11 @@ const LoveNotifications = ({ isVisible = true }: { isVisible?: boolean }) => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Verificar si estamos en el cliente
+  useEffect(() => {
+    setIsMounted(true);
   }, []);
 
   // 100 mensajes de amor cortos y únicos siguiendo el estilo de la carta
@@ -231,12 +238,12 @@ const LoveNotifications = ({ isVisible = true }: { isVisible?: boolean }) => {
       }, 10000);
     };
 
-    // Primer mensaje después de 4 segundos
+    // Primer mensaje después de 1 segundo
     const initialTimer = setTimeout(() => {
       showMessage();
       // Iniciar el ciclo de mensajes subsecuentes
       scheduleNextMessage();
-    }, 4000);
+    }, 1000);
 
     return () => {
       clearTimeout(initialTimer);
@@ -257,7 +264,14 @@ const LoveNotifications = ({ isVisible = true }: { isVisible?: boolean }) => {
     }
   }, [shuffledMessages, isInitialized]);
 
-  // Reset cuando se oculta
+  // Inicializar inmediatamente cuando el componente se monte
+  useEffect(() => {
+    if (isMounted && shuffledMessages.length > 0) {
+      setIsInitialized(true);
+    }
+  }, [isMounted, shuffledMessages]);
+
+  // Reset cuando se oculta - NO resetear isInitialized para mantener funcionando
   useEffect(() => {
     if (!isVisible) {
       // Limpiar timer de ocultación si existe
@@ -266,15 +280,53 @@ const LoveNotifications = ({ isVisible = true }: { isVisible?: boolean }) => {
         setHideTimer(null);
       }
       setCurrentMessage(null);
-      setUsedMessages([]);
-      setIsInitialized(false);
     }
   }, [isVisible, hideTimer]);
 
-  if (!isVisible) return null;
+  if (!isVisible || !isMounted) return null;
 
-  return (
-    <div className="fixed top-6 left-1/2 transform -translate-x-1/2 md:top-auto md:bottom-6 md:right-6 md:left-auto md:transform-none z-50">
+  return createPortal(
+    <div 
+      ref={(el) => {
+        if (el) {
+          // Crear un estilo inline que sobrescriba selectores globales como *, *::before, *::after
+          const styleElement = document.createElement('style');
+          const uniqueId = `love-notifications-${Date.now()}`;
+          el.setAttribute('id', uniqueId);
+          
+          styleElement.textContent = `
+            #${uniqueId} {
+              position: fixed !important;
+              top: 24px !important;
+              left: ${isMobile ? '16px' : '50%'} !important;
+              ${isMobile ? 'right: 16px !important;' : ''}
+              margin-left: ${isMobile ? '0' : '-192px'} !important;
+              z-index: 999999 !important;
+              pointer-events: none !important;
+              max-width: ${isMobile ? 'none' : '384px'} !important;
+              width: ${isMobile ? 'auto' : '100%'} !important;
+              transform-style: flat !important;
+              transform: none !important;
+              backface-visibility: visible !important;
+              perspective: none !important;
+              will-change: auto !important;
+              isolation: isolate !important;
+            }
+            #${uniqueId}, #${uniqueId}::before, #${uniqueId}::after {
+              transform-style: flat !important;
+              transform: none !important;
+              backface-visibility: visible !important;
+              perspective: none !important;
+            }
+          `;
+          
+          document.head.appendChild(styleElement);
+          
+          // Guardar referencia para limpieza posterior si es necesario
+          el.setAttribute('data-style-id', styleElement.id || uniqueId);
+        }
+      }}
+    >
       <AnimatePresence>
         {currentMessage && (
           <motion.div
@@ -363,14 +415,14 @@ const LoveNotifications = ({ isVisible = true }: { isVisible?: boolean }) => {
               transition={{ 
                 duration: 8, 
                 ease: "linear"
-                // Sin delay - empezar inmediatamente para coincidir con el timer
               }}
               className="absolute bottom-0 left-0 h-0.5 bg-white/40 rounded-full"
             />
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </div>,
+    document.body
   );
 };
 

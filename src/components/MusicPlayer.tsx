@@ -24,20 +24,20 @@ export default function MusicPlayer() {
       
       html5: true, // Usar HTML5 Audio para mejor compatibilidad
       onload: () => {
-        console.log('🎵 Música cargada correctamente');
+        // Música cargada
       },
       onloaderror: (soundId, error) => {
-        console.error('❌ Error cargando música:', error);
-        console.log('🔍 Intentando siguiente fuente...');
+        // Error cargando música
+        // Intentando siguiente fuente
       },
       onplay: () => {
-        console.log('▶️ Música iniciada');
+        // Música iniciada
       },
       onpause: () => {
-        console.log('⏸️ Música pausada');
+        // Música pausada
       },
       onstop: () => {
-        console.log('⏹️ Música detenida');
+        // Música detenida
       }
     });
 
@@ -49,24 +49,24 @@ export default function MusicPlayer() {
   }, []);
 
   useEffect(() => {
-    console.log('🔄 MusicPlayer useEffect - isPlaying cambió a:', isPlaying); // Debug
+    // Estado de música cambió
     if (!soundRef.current) {
-      console.log('❌ soundRef.current es null'); // Debug
+      // soundRef es null
       return;
     }
 
     if (isPlaying) {
-      console.log('🎵 Reproduciendo música desde el store'); // Debug
+      // Reproduciendo música
       try {
         const playResult = soundRef.current.play();
         if (typeof playResult !== 'number') {
-          console.log('⚠️ Howler.js no pudo reproducir - posible problema de carga'); // Debug
+          // Error reproduciendo
         }
       } catch (error) {
-        console.error('Error al reproducir música:', error);
+        // Error al reproducir
       }
     } else {
-      console.log('🎵 Pausando música desde el store'); // Debug
+      // Pausando música
       soundRef.current.pause();
     }
   }, [isPlaying]);
@@ -75,11 +75,11 @@ export default function MusicPlayer() {
     if (!soundRef.current) return;
 
     try {
-      console.log('🎵 Toggle manual de música'); // Debug
+      // Toggle manual
       // Solo cambiar el estado del store, el useEffect se encargará de la reproducción
       toggleMusic();
     } catch (error) {
-      console.error('Error controlando música:', error);
+      // Error controlando música
     }
   };
 

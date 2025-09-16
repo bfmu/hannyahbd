@@ -58,7 +58,7 @@ export const generatePDFFromElement = async (
     // Descargar el PDF
     pdf.save(filename);
   } catch (error) {
-    console.error('Error generando PDF:', error);
+    // Error manejado silenciosamente
     throw new Error('No se pudo generar el PDF');
   }
 };
@@ -111,7 +111,7 @@ export const generateCompleteBirthdayPDF = async (
   filename: string = 'feliz-cumpleanos-especial.pdf'
 ): Promise<void> => {
   try {
-    console.log('🎁 Generando PDF completo con carta y fotos...');
+    // Generando PDF completo
     
     const pdf = new jsPDF('portrait', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
@@ -197,7 +197,7 @@ export const generateCompleteBirthdayPDF = async (
       const photo = photos[i];
       
       try {
-        console.log(`📸 Cargando foto ${i + 1}: ${photo.src}`);
+        // Cargando foto
         
         pdf.addPage();
         currentY = margin;
@@ -249,10 +249,10 @@ export const generateCompleteBirthdayPDF = async (
           currentY += captionLines.length * 6;
         }
         
-        console.log(`✅ Foto ${i + 1} agregada al PDF`);
+        // Foto agregada
         
       } catch (error) {
-        console.warn(`⚠️ No se pudo cargar la foto ${i + 1}:`, error);
+        // Foto no pudo cargarse
         
         // Agregar placeholder si la foto no carga
         const placeholderWidth = contentWidth - 20;
@@ -278,12 +278,12 @@ export const generateCompleteBirthdayPDF = async (
       }
     }
     
-    console.log('💾 Guardando PDF...');
+    // Guardando PDF
     pdf.save(filename);
-    console.log('🎉 PDF generado exitosamente');
+    // PDF generado exitosamente
     
   } catch (error) {
-    console.error('❌ Error generando PDF completo:', error);
+    // Error generando PDF
     throw new Error('No se pudo generar el PDF completo');
   }
 };
@@ -368,7 +368,7 @@ export const generateLoveLetterPDF = (
     // Descargar
     pdf.save(filename);
   } catch (error) {
-    console.error('Error generando PDF personalizado:', error);
+    // Error generando PDF personalizado
     throw new Error('No se pudo generar el PDF');
   }
 };

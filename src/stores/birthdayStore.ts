@@ -49,7 +49,6 @@ export const useBirthdayStore = create<BirthdayState>()(
         
       toggleMusic: () => 
         set((state) => {
-          console.log('🔄 Store toggleMusic: de', state.isPlaying, 'a', !state.isPlaying); // Debug
           return { isPlaying: !state.isPlaying };
         }),
         

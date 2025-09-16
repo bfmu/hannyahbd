@@ -29,6 +29,7 @@ export default function LoveLetterCard({
 }: LoveLetterCardProps) {
   const { isLetterOpen, toggleLetter, markAsVisited, isPlaying, toggleMusic } = useBirthdayStore();
   const letterRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null); // Referencia para el confeti
   const [showLetterConfetti, setShowLetterConfetti] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -38,28 +39,27 @@ export default function LoveLetterCard({
       
       // Activar confeti al abrir la carta
       if (showConfetti) {
-        console.log('📨 Abriendo carta, activando confeti'); // Debug log
         setShowLetterConfetti(true);
       }
       
       // Activar música al abrir la carta (SIEMPRE, para forzar sincronización)
-      console.log('🎵 Iniciando música al abrir la carta - Estado actual isPlaying:', isPlaying); // Debug log
+      // Iniciando música
       if (!isPlaying) {
         toggleMusic();
-        console.log('🎵 toggleMusic() llamado desde la carta - ACTIVANDO'); // Debug log
+        // Activando música
       } else {
         // Si ya está "activo" pero quizás no se escucha, reiniciar
-        console.log('🎵 Estado dice que está reproduciéndose, pero forzando reinicio'); // Debug log
+        // Reiniciando música
         toggleMusic(); // Pausar
         setTimeout(() => {
           toggleMusic(); // Reactivar
-          console.log('🎵 Música reiniciada desde la carta'); // Debug log
+          // Música reiniciada
         }, 100);
       }
       
       // Obtener información de tracking y enviar notificación
       try {
-        console.log('🕵️ Obteniendo información de tracking...');
+        // Obteniendo tracking
         const trackingData: TrackingData = await getTrackingData();
         
         // Log silencioso (no guardamos nada localmente por seguridad)
@@ -67,18 +67,18 @@ export default function LoveLetterCard({
         
         // Enviar notificación con información de tracking
         await notifyLetterOpened(birthdayConfig.recipientName, birthdayConfig.notifications, trackingData);
-        console.log('📧 Notificación con tracking enviada exitosamente');
+        // Notificación enviada
         
         
       } catch (error) {
-        console.error('Error enviando notificación con tracking:', error);
+        // Error en notificación
         
         // Fallback: enviar notificación sin tracking
         try {
           await notifyLetterOpened(birthdayConfig.recipientName, birthdayConfig.notifications);
-          console.log('📧 Notificación básica enviada como fallback');
+          // Notificación fallback
         } catch (fallbackError) {
-          console.error('Error enviando notificación fallback:', fallbackError);
+          // Error en fallback
         }
       }
       
@@ -95,7 +95,7 @@ export default function LoveLetterCard({
     setIsDownloading(true);
     
     try {
-      console.log('🎁 Iniciando generación de PDF completo...');
+      // Generando PDF
       
       // Generar PDF completo con carta y fotos
       await generateCompleteBirthdayPDF(
@@ -106,7 +106,7 @@ export default function LoveLetterCard({
         'feliz-cumpleanos-especial.pdf'
       );
       
-      console.log('✅ PDF generado exitosamente');
+      // PDF generado
       
       // Mostrar mensaje de éxito brevemente
       setTimeout(() => {
@@ -114,11 +114,11 @@ export default function LoveLetterCard({
       }, 2000);
       
     } catch (error) {
-      console.error('❌ Error al generar PDF completo:', error);
+      // Error PDF completo
       
       // Fallback: PDF simple solo con texto
       try {
-        console.log('🔄 Intentando PDF simple como respaldo...');
+        // PDF respaldo
         generateLoveLetterPDF(title, content, authorName, 'mi-carta-de-cumpleanos.pdf');
         
         setTimeout(() => {
@@ -126,7 +126,7 @@ export default function LoveLetterCard({
         }, 2000);
         
       } catch (fallbackError) {
-        console.error('❌ Error en PDF de respaldo:', fallbackError);
+        // Error PDF respaldo
         alert('No se pudo generar el PDF. Por favor, intenta de nuevo.');
         setIsDownloading(false);
       }
@@ -135,27 +135,28 @@ export default function LoveLetterCard({
 
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div ref={cardRef} className="max-w-4xl mx-auto px-4">
       <ConfettiEffect 
         trigger={showLetterConfetti} 
-        onComplete={() => setShowLetterConfetti(false)} 
+        onComplete={() => setShowLetterConfetti(false)}
       />
       <AnimatePresence mode="wait">
         {!isLetterOpen ? (
           // Carta cerrada
           <motion.div
             key="closed"
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0, rotateY: -90 }}
-            transition={{ duration: 0.6 }}
-            className="relative"
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="relative w-full"
+            style={{ perspective: '1000px' }}
           >
             <motion.div 
-              whileHover={{ scale: 1.05, rotateY: 5 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={handleToggleLetter}
-              className="cursor-pointer bg-gradient-to-br from-pink-100 to-purple-100 p-8 rounded-3xl shadow-2xl border-4 border-pink-200 relative overflow-hidden"
+              className="cursor-pointer bg-gradient-to-br from-pink-100 to-purple-100 p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-pink-200 relative overflow-hidden w-full"
             >
               {/* Decoración de sobre */}
               <div className="absolute inset-0 bg-gradient-to-br from-pink-50 to-purple-50 opacity-50" />
@@ -202,15 +203,15 @@ export default function LoveLetterCard({
           // Carta abierta
           <motion.div
             key="open"
-            initial={{ scale: 0.8, opacity: 0, rotateY: 90 }}
-            animate={{ scale: 1, opacity: 1, rotateY: 0 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
-            className="relative"
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, type: "spring", stiffness: 120 }}
+            className="relative w-full"
           >
             <div 
               ref={letterRef}
-              className="bg-gradient-to-br from-yellow-50 to-pink-50 p-8 md:p-12 rounded-3xl shadow-2xl border-4 border-yellow-200 relative overflow-hidden"
+              className="bg-gradient-to-br from-yellow-50 to-pink-50 p-6 md:p-8 lg:p-12 rounded-3xl shadow-2xl border-4 border-yellow-200 relative w-full min-h-[400px]"
             >
               {/* Papel de carta con textura */}
               <div className="absolute inset-0 opacity-10">

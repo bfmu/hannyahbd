@@ -15,7 +15,7 @@ import { getTrackingData, logTracking, TrackingData } from '@/utils/tracking';
 import { motion } from 'framer-motion';
 
 export default function Home() {
-  const { isUnlocked, isLetterOpen, checkUnlockStatus, setBirthdayDate, resetPageState } = useBirthdayStore();
+  const { isUnlocked, checkUnlockStatus, setBirthdayDate, resetPageState } = useBirthdayStore();
   const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
@@ -48,7 +48,6 @@ export default function Home() {
       localStorage.setItem(lastVisitKey, currentTime);
 
       try {
-        console.log(`👀 Visita #${newVisitCount} detectada, obteniendo datos de tracking...`);
         const trackingData: TrackingData = await getTrackingData();
 
         // Log silencioso
@@ -60,11 +59,8 @@ export default function Home() {
           lastVisit: lastVisit ? new Date(lastVisit) : null,
           isFirstVisit: newVisitCount === 1
         });
-        console.log(`📧 Notificación de visita #${newVisitCount} enviada exitosamente`);
 
-      } catch (error) {
-        console.error('Error enviando notificación de visita:', error);
-
+      } catch {
         // Fallback: enviar notificación sin tracking pero con contador
         try {
           await notifyPageVisit(birthdayConfig.notifications, undefined, {
@@ -72,9 +68,8 @@ export default function Home() {
             lastVisit: lastVisit ? new Date(lastVisit) : null,
             isFirstVisit: newVisitCount === 1
           });
-          console.log(`📧 Notificación básica de visita #${newVisitCount} enviada como fallback`);
-        } catch (fallbackError) {
-          console.error('Error enviando notificación fallback de visita:', fallbackError);
+        } catch {
+          // Error manejado silenciosamente
         }
       }
     };
@@ -92,16 +87,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 relative">
-      {/* Partículas de corazones flotantes */}
+      {/* Elementos flotantes - FUERA del contenedor principal */}
       <FloatingHearts />
+      <LoveNotifications isVisible={true} />
       
-      <MusicPlayer />
-      <ConfettiEffect 
-        trigger={showConfetti} 
-        onComplete={() => setShowConfetti(false)} 
-      />
-      
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+        <MusicPlayer />
+        <ConfettiEffect 
+          trigger={showConfetti} 
+          onComplete={() => setShowConfetti(false)}
+        />
+        
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col items-center justify-center min-h-screen py-8">
           
           {!isUnlocked ? (
@@ -166,6 +163,19 @@ export default function Home() {
 
               {/* Componentes de fotos y carta */}
               <div className="grid gap-12 pb-16">
+
+              <motion.div
+                  initial={{ y: 50, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.9 }}
+                  className="mb-16 w-full"
+                >
+                  <LoveLetterCard 
+                    content={loveLetterContent}
+                    authorName={birthdayConfig.senderName}
+                  />
+                </motion.div>
+                
                 <motion.div
                   initial={{ x: -100, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
@@ -178,25 +188,13 @@ export default function Home() {
                   <PhotoCarousel photos={samplePhotos} />
                 </motion.div>
 
-                <motion.div
-                  initial={{ x: 100, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.9 }}
-                  className="mb-16"
-                >
-                  <LoveLetterCard 
-                    content={loveLetterContent}
-                    authorName={birthdayConfig.senderName}
-                  />
-                </motion.div>
+                
               </div>
             </motion.div>
           )}
         </div>
       </div>
-
-      {/* Notificaciones de amor que aparecen cuando la carta está abierta */}
-      <LoveNotifications isVisible={isLetterOpen} />
+    </div>
     </div>
   );
 }

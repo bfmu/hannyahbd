@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import Image from 'next/image';
@@ -40,9 +40,16 @@ export default function PhotoCarousel({ photos, autoPlayInterval = 5000 }: Photo
     return () => clearInterval(interval);
   }, [isAutoPlaying, nextPhoto, autoPlayInterval, photos.length]);
 
-  // Pausar auto-play al hacer hover
-  const handleMouseEnter = () => setIsAutoPlaying(false);
-  const handleMouseLeave = () => setIsAutoPlaying(true);
+  // Pausar auto-play al hacer hover (memoizado)
+  const handleMouseEnter = useCallback(() => setIsAutoPlaying(false), []);
+  const handleMouseLeave = useCallback(() => setIsAutoPlaying(true), []);
+
+  // Preload de imágenes próximas para mejor rendimiento
+  const preloadNextImage = useMemo(() => {
+    if (photos.length <= 1) return null;
+    const nextIndex = (currentIndex + 1) % photos.length;
+    return photos[nextIndex].src;
+  }, [photos, currentIndex]);
 
   if (photos.length === 0) {
     return (
@@ -73,10 +80,17 @@ export default function PhotoCarousel({ photos, autoPlayInterval = 5000 }: Photo
               src={photos[currentIndex].src}
               alt={photos[currentIndex].alt}
               fill
-              className="object-cover"
+              className="object-cover gpu-accelerated"
               priority={currentIndex === 0}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
             />
+            
+            {/* Preload de imagen siguiente para mejor performance */}
+            {preloadNextImage && (
+              <link rel="preload" as="image" href={preloadNextImage} />
+            )}
             
             {/* Overlay con gradient para mejor legibilidad */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
