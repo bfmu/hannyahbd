@@ -60,7 +60,7 @@ export const getTrackingData = async (): Promise<TrackingData> => {
     // Tracking obtenido
     return trackingData;
     
-  } catch (error) {
+  } catch {
     // Error en tracking
     
     // Fallback con información básica
@@ -131,7 +131,8 @@ const analyzeUserAgent = (userAgent: string) => {
 /**
  * Log silencioso del tracking (solo para debug, no guarda nada)
  */
-export const logTracking = (data: TrackingData): void => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const logTracking = (_data: TrackingData): void => {
   // Solo log para debugging, no guardar nada localmente por seguridad
   // Tracking capturado silenciosamente
 };

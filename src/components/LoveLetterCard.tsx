@@ -70,14 +70,14 @@ export default function LoveLetterCard({
         // Notificación enviada
         
         
-      } catch (error) {
+      } catch {
         // Error en notificación
         
         // Fallback: enviar notificación sin tracking
         try {
           await notifyLetterOpened(birthdayConfig.recipientName, birthdayConfig.notifications);
           // Notificación fallback
-        } catch (fallbackError) {
+        } catch {
           // Error en fallback
         }
       }
@@ -113,7 +113,7 @@ export default function LoveLetterCard({
         setIsDownloading(false);
       }, 2000);
       
-    } catch (error) {
+    } catch {
       // Error PDF completo
       
       // Fallback: PDF simple solo con texto
@@ -125,7 +125,7 @@ export default function LoveLetterCard({
           setIsDownloading(false);
         }, 2000);
         
-      } catch (fallbackError) {
+      } catch {
         // Error PDF respaldo
         alert('No se pudo generar el PDF. Por favor, intenta de nuevo.');
         setIsDownloading(false);

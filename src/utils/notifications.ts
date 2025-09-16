@@ -44,7 +44,7 @@ export const sendTelegramNotification = async (
     } else {
       return false;
     }
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -69,7 +69,7 @@ export const sendEmailNotification = async (
     );
     
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -162,8 +162,8 @@ export const notifyPageVisit = async (
 
   // Ejecutar todas las notificaciones
   try {
-    const results = await Promise.allSettled(promises);
-  } catch (error) {
+    await Promise.allSettled(promises);
+  } catch {
     // Error manejado silenciosamente
   }
 };
@@ -224,8 +224,8 @@ export const notifyLetterOpened = async (
 
   // Ejecutar todas las notificaciones
   try {
-    const results = await Promise.allSettled(promises);
-  } catch (error) {
+    await Promise.allSettled(promises);
+  } catch {
     // Error manejado silenciosamente
   }
 };

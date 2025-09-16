@@ -65,3 +65,4 @@ export default function SafeConfetti({ trigger, onComplete }: SafeConfettiProps)
 
   return null;
 }
+

@@ -95,3 +95,4 @@ const SparkleEffect = ({ trigger, duration = 3000 }: SparkleEffectProps) => {
 };
 
 export default SparkleEffect;
+

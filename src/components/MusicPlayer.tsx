@@ -26,7 +26,7 @@ export default function MusicPlayer() {
       onload: () => {
         // Música cargada
       },
-      onloaderror: (soundId, error) => {
+      onloaderror: () => {
         // Error cargando música
         // Intentando siguiente fuente
       },
@@ -62,7 +62,7 @@ export default function MusicPlayer() {
         if (typeof playResult !== 'number') {
           // Error reproduciendo
         }
-      } catch (error) {
+      } catch {
         // Error al reproducir
       }
     } else {
@@ -78,7 +78,7 @@ export default function MusicPlayer() {
       // Toggle manual
       // Solo cambiar el estado del store, el useEffect se encargará de la reproducción
       toggleMusic();
-    } catch (error) {
+    } catch {
       // Error controlando música
     }
   };

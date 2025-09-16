@@ -57,7 +57,7 @@ export const generatePDFFromElement = async (
 
     // Descargar el PDF
     pdf.save(filename);
-  } catch (error) {
+  } catch {
     // Error manejado silenciosamente
     throw new Error('No se pudo generar el PDF');
   }
@@ -251,7 +251,7 @@ export const generateCompleteBirthdayPDF = async (
         
         // Foto agregada
         
-      } catch (error) {
+      } catch {
         // Foto no pudo cargarse
         
         // Agregar placeholder si la foto no carga
@@ -282,7 +282,7 @@ export const generateCompleteBirthdayPDF = async (
     pdf.save(filename);
     // PDF generado exitosamente
     
-  } catch (error) {
+  } catch {
     // Error generando PDF
     throw new Error('No se pudo generar el PDF completo');
   }
@@ -367,7 +367,7 @@ export const generateLoveLetterPDF = (
     
     // Descargar
     pdf.save(filename);
-  } catch (error) {
+  } catch {
     // Error generando PDF personalizado
     throw new Error('No se pudo generar el PDF');
   }

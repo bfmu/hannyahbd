@@ -9,14 +9,14 @@ interface SoundEffectProps {
 }
 
 const SoundEffect = ({ trigger, soundType, volume = 0.3 }: SoundEffectProps) => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  // const audioRef = useRef<HTMLAudioElement | null>(null); // No se usa actualmente
 
   useEffect(() => {
     if (!trigger) return;
 
     // Crear sonidos con Web Audio API para efectos simples
     const createSound = (type: string) => {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 
@@ -56,7 +56,7 @@ const SoundEffect = ({ trigger, soundType, volume = 0.3 }: SoundEffectProps) => 
 
     try {
       createSound(soundType);
-    } catch (error) {
+    } catch {
       // Silenciar errores de audio en navegadores que no lo soporten
     }
   }, [trigger, soundType, volume]);
