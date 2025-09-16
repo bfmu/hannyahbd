@@ -82,6 +82,102 @@ export const sendEmailNotification = async (
 };
 
 /**
+ * Notifica cuando alguien visita la página
+ */
+export const notifyPageVisit = async (
+  config: NotificationConfig,
+  trackingData?: {
+    ip: string;
+    country?: string;
+    city?: string;
+    region?: string;
+    device: string;
+    os: string;
+    browser: string;
+    timezone: string;
+  },
+  visitInfo?: {
+    visitCount: number;
+    lastVisit: Date | null;
+    isFirstVisit: boolean;
+  }
+): Promise<void> => {
+  const timestamp = new Date().toLocaleString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'America/Mexico_City'
+  });
+
+  const promises: Promise<boolean>[] = [];
+
+  // Telegram notification
+  if (config.telegram) {
+    // Determinar si es primera visita o reincidente
+    const isFirstVisit = visitInfo?.isFirstVisit ?? true;
+    const visitCount = visitInfo?.visitCount ?? 1;
+    const lastVisit = visitInfo?.lastVisit;
+
+    let telegramMessage = isFirstVisit 
+      ? `🎉 <b>¡Primera visita a la página!</b> 🎂\n\n` +
+        `🌟 ¡Alguien ha descubierto la página de cumpleaños!\n\n`
+      : `🔄 <b>¡Visita #${visitCount} a la página!</b> 🎂\n\n` +
+        `👀 El mismo visitante ha regresado\n\n`;
+
+    telegramMessage += `📅 Fecha y hora: ${timestamp}\n\n`;
+
+    // Información del contador de visitas
+    if (visitInfo && !isFirstVisit && lastVisit) {
+      const timeDiff = Math.abs(new Date().getTime() - lastVisit.getTime());
+      const hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));
+      const minutesDiff = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      
+      let timeString = '';
+      if (hoursDiff > 0) {
+        timeString = `${hoursDiff}h ${minutesDiff}m`;
+      } else {
+        timeString = `${minutesDiff} minutos`;
+      }
+
+      telegramMessage += `📊 <b>Contador de visitas:</b>\n` +
+        `• Total de visitas: <b>${visitCount}</b>\n` +
+        `• Última visita: hace ${timeString}\n\n`;
+    }
+
+    // Agregar información de tracking si está disponible
+    if (trackingData) {
+      telegramMessage += `📍 <b>Información del visitante:</b>\n\n` +
+        `🌍 <b>Ubicación:</b>\n` +
+        `• IP: <code>${trackingData.ip}</code>\n` +
+        `• País: ${trackingData.country}\n` +
+        `• Ciudad: ${trackingData.city}, ${trackingData.region}\n\n` +
+        `📱 <b>Dispositivo:</b>\n` +
+        `• Tipo: ${trackingData.device}\n` +
+        `• SO: ${trackingData.os}\n` +
+        `• Navegador: ${trackingData.browser}\n\n` +
+        `⏰ <b>Zona horaria:</b> ${trackingData.timezone}\n\n`;
+    }
+
+    telegramMessage += isFirstVisit 
+      ? `¡La página está siendo visitada por primera vez! ✨`
+      : `¡Visitante recurrente detectado! 🔄`;
+
+    promises.push(sendTelegramNotification(telegramMessage, config.telegram));
+  }
+
+  // Ejecutar todas las notificaciones
+  try {
+    const results = await Promise.allSettled(promises);
+    const successful = results.filter(r => r.status === 'fulfilled' && r.value).length;
+    console.log(`${successful}/${results.length} notificaciones de visita enviadas exitosamente`);
+  } catch (error) {
+    console.error('Error en notificaciones de visita:', error);
+  }
+};
+
+/**
  * Envía notificaciones cuando se abre la carta
  */
 export const notifyLetterOpened = async (

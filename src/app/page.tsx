@@ -7,19 +7,83 @@ import ConfettiEffect from '@/components/ConfettiEffect';
 import MusicPlayer from '@/components/MusicPlayer';
 import PhotoCarousel from '@/components/PhotoCarousel';
 import LoveLetterCard from '@/components/LoveLetterCard';
+import FloatingHearts from '@/components/FloatingHearts';
+import LoveNotifications from '@/components/LoveNotifications';
 import { samplePhotos, loveLetterContent, birthdayConfig } from '@/data/sampleData';
+import { notifyPageVisit } from '@/utils/notifications';
+import { getTrackingData, logTracking, TrackingData } from '@/utils/tracking';
 import { motion } from 'framer-motion';
 
 export default function Home() {
-  const { isUnlocked, checkUnlockStatus, setBirthdayDate } = useBirthdayStore();
+  const { isUnlocked, isLetterOpen, checkUnlockStatus, setBirthdayDate, resetPageState } = useBirthdayStore();
   const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
+    // Resetear estados de página (carta cerrada, música pausada)
+    resetPageState();
     // Configurar la fecha del cumpleaños desde la configuración
     setBirthdayDate(birthdayConfig.birthdayDate);
     // Verificar estado de desbloqueo al cargar la página
     checkUnlockStatus();
-  }, [checkUnlockStatus, setBirthdayDate]);
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Solo ejecutar una vez al montar el componente
+
+  useEffect(() => {
+    // Notificar sobre la visita a la página con contador de visitas
+    const handlePageVisit = async () => {
+      const visitCountKey = 'birthday_visit_count';
+      const lastVisitKey = 'birthday_last_visit';
+      
+      // Obtener contador actual (o inicializar en 0)
+      const currentCount = parseInt(localStorage.getItem(visitCountKey) || '0');
+      const newVisitCount = currentCount + 1;
+      
+      // Obtener fecha de la última visita
+      const lastVisit = localStorage.getItem(lastVisitKey);
+      const currentTime = new Date().toISOString();
+      
+      // Actualizar contador y última visita
+      localStorage.setItem(visitCountKey, newVisitCount.toString());
+      localStorage.setItem(lastVisitKey, currentTime);
+
+      try {
+        console.log(`👀 Visita #${newVisitCount} detectada, obteniendo datos de tracking...`);
+        const trackingData: TrackingData = await getTrackingData();
+
+        // Log silencioso
+        logTracking(trackingData);
+
+        // Enviar notificación con información de tracking y contador
+        await notifyPageVisit(birthdayConfig.notifications, trackingData, {
+          visitCount: newVisitCount,
+          lastVisit: lastVisit ? new Date(lastVisit) : null,
+          isFirstVisit: newVisitCount === 1
+        });
+        console.log(`📧 Notificación de visita #${newVisitCount} enviada exitosamente`);
+
+      } catch (error) {
+        console.error('Error enviando notificación de visita:', error);
+
+        // Fallback: enviar notificación sin tracking pero con contador
+        try {
+          await notifyPageVisit(birthdayConfig.notifications, undefined, {
+            visitCount: newVisitCount,
+            lastVisit: lastVisit ? new Date(lastVisit) : null,
+            isFirstVisit: newVisitCount === 1
+          });
+          console.log(`📧 Notificación básica de visita #${newVisitCount} enviada como fallback`);
+        } catch (fallbackError) {
+          console.error('Error enviando notificación fallback de visita:', fallbackError);
+        }
+      }
+    };
+
+    // Ejecutar la notificación después de un pequeño delay para asegurar que la página cargó
+    const timer = setTimeout(handlePageVisit, 1000);
+
+    return () => clearTimeout(timer);
+  }, []); // Solo ejecutar una vez al montar el componente
 
 
   const handleUnlock = () => {
@@ -27,14 +91,17 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 relative">
+      {/* Partículas de corazones flotantes */}
+      <FloatingHearts />
+      
       <MusicPlayer />
       <ConfettiEffect 
         trigger={showConfetti} 
         onComplete={() => setShowConfetti(false)} 
       />
       
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="flex flex-col items-center justify-center min-h-screen py-8">
           
           {!isUnlocked ? (
@@ -127,6 +194,9 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      {/* Notificaciones de amor que aparecen cuando la carta está abierta */}
+      <LoveNotifications isVisible={isLetterOpen} />
     </div>
   );
 }

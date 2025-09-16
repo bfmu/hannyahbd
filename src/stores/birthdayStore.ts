@@ -19,6 +19,7 @@ interface BirthdayState {
   toggleMusic: () => void;
   setCurrentPhoto: (index: number) => void;
   markAsVisited: () => void;
+  resetPageState: () => void;
 }
 
 export const useBirthdayStore = create<BirthdayState>()(
@@ -57,6 +58,13 @@ export const useBirthdayStore = create<BirthdayState>()(
         
       markAsVisited: () => 
         set({ hasVisited: true }),
+
+      resetPageState: () =>
+        set({
+          isLetterOpen: false,  // Carta siempre cerrada al iniciar
+          isPlaying: false,     // Música pausada al iniciar
+          currentPhotoIndex: 0  // Volver a la primera foto
+        }),
     }),
     {
       name: 'birthday-storage',
