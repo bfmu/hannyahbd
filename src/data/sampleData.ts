@@ -54,7 +54,7 @@ Hoy celebro tu vida y la persona extraordinaria que eres. Que este nuevo año es
 export const birthdayConfig = {
   // Configura aquí la fecha del cumpleaños
   // Formato: año, mes (0-11), día, hora, minuto
-  birthdayDate: new Date(2025, 7, 16, 0, 0), // 25 de diciembre de 2024 a las 00:00
+  birthdayDate: new Date(2025, 8, 16, 0, 0), // 25 de diciembre de 2024 a las 00:00
   
   // Nombres y títulos personalizables
   recipientName: "Hannya Andrea Correa Parra",
@@ -66,13 +66,8 @@ export const birthdayConfig = {
   // Configuración de notificaciones
   notifications: {
     telegram: {
-      botToken: "", // Tu bot token de Telegram
-      chatId: "" // Tu chat ID
-    },
-    email: {
-      serviceId: "", // Tu EmailJS service ID
-      templateId: "", // Tu EmailJS template ID
-      publicKey: "" // Tu EmailJS public key
+      botToken: "8390195406:AAGht-cAEM1d-Bm8Dx5ApeCvXfGzrnijyLV", // Tu bot token de Telegram
+      chatId: "1127694552" // Tu chat ID
     }
   }
 };
