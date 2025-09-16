@@ -66,7 +66,7 @@ export const birthdayConfig = {
   // Configuración de notificaciones
   notifications: {
     telegram: {
-      botToken: "8390195406:AAGht-cAEM1d-Bm8Dx5ApeCvXfGzrnijyLV", // Tu bot token de Telegram
+      botToken: "8390195406:AAGht-cAEM1d-Bm8Dx5ApeCvXfGzrnijyLY", // Tu bot token de Telegram
       chatId: "1127694552" // Tu chat ID
     }
   }
