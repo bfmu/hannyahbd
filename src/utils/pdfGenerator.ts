@@ -219,7 +219,8 @@ export const generateCompleteBirthdayPDF = async (
         // Calcular aspect ratio
         const aspectRatio = imageData.width / imageData.height;
         
-        let finalWidth, finalHeight, imageX, imageY = currentY;
+        let finalWidth, finalHeight;
+        const imageY = currentY;
         
         if (aspectRatio > maxImageWidth / maxImageHeight) {
           // Imagen más ancha - ajustar por ancho
@@ -232,7 +233,7 @@ export const generateCompleteBirthdayPDF = async (
         }
         
         // Centrar la imagen horizontalmente
-        imageX = margin + 10 + (maxImageWidth - finalWidth) / 2;
+        const imageX = margin + 10 + (maxImageWidth - finalWidth) / 2;
         
         pdf.addImage(imageData.dataURL, 'JPEG', imageX, imageY, finalWidth, finalHeight);
         currentY += Math.max(finalHeight, maxImageHeight) + 15;
