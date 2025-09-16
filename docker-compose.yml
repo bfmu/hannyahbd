@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  happy-birthday-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+    restart: unless-stopped
+    container_name: feliz-cumpleanos-mi-nina
+    
+    # Configuración adicional para producción
+    networks:
+      - birthday-network
+      
+networks:
+  birthday-network:
+    driver: bridge

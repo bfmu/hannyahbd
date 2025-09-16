@@ -1,0 +1,47 @@
+# Dependencias
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Archivos de desarrollo
+.env*.local
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*
+
+# Testing
+coverage/
+.nyc_output
+
+# Misc
+.DS_Store
+*.tgz
+*.tar.gz
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+
+# Temporal files
+.tmp/
+.temp/
