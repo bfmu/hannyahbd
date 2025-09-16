@@ -43,7 +43,7 @@ export const loveLetterContent = `Mi amor,
 
 ¡Feliz cumpleaños! Hoy es tu día especial, y no quería dejar pasar la oportunidad de decirte lo mucho que te aprecio. Deseo de todo corazón que cumplas muchísimos años más y que Dios te siga bendiciendo con oportunidades maravillosas.
 
-Es impresionante ver lo rápido que pasa el tiempo. Parece que fue ayer cuando nos conocimos, hace casi 10 años, en esa casa de cupos. Recuerdo a la niña traviesa que eras y cómo, año tras año, has ido madurando, convirtiéndote en la increíble persona que eres hoy.
+Es impresionante ver lo rápido que pasa el tiempo. Parece que fue ayer cuando nos conocimos, hace casi 8 años, en esa casa de cupos. Recuerdo a la niña traviesa que eras y cómo, año tras año, has ido madurando, convirtiéndote en la increíble persona que eres hoy.
 
 Siempre te recordaré como esa persona tierna, dulce y suave que me llenó de paz. Admiro tu amor por los animales y tu espíritu espontáneo. Tu pasión por disfrutar la vida, bailar, cantar y el rock es contagiosa. Valoro mucho que seas tan amiguera y que mantengas a tus amigos cerca; es un reflejo de tu hermoso corazón. Tu curiosidad por conocer gente y culturas me inspira, y me siento afortunado de haber compartido tantas aventuras y momentos inolvidables contigo, como los que capturamos en cada una de esas fotos.
 
@@ -54,7 +54,7 @@ Hoy celebro tu vida y la persona extraordinaria que eres. Que este nuevo año es
 export const birthdayConfig = {
   // Configura aquí la fecha del cumpleaños
   // Formato: año, mes (0-11), día, hora, minuto
-  birthdayDate: new Date(2025, 8, 16, 0, 0), // 25 de diciembre de 2024 a las 00:00
+  birthdayDate: new Date(2025, 8, 16, 14, 0), // 25 de diciembre de 2024 a las 00:00
   
   // Nombres y títulos personalizables
   recipientName: "Hannya Andrea Correa Parra",

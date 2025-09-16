@@ -64,9 +64,9 @@ export const generatePDFFromElement = async (
 };
 
 /**
- * Carga una imagen y la convierte a base64
+ * Carga una imagen y la convierte a base64 con sus dimensiones originales
  */
-const loadImageAsBase64 = (src: string): Promise<string> => {
+const loadImageAsBase64 = (src: string): Promise<{dataURL: string, width: number, height: number}> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -85,7 +85,11 @@ const loadImageAsBase64 = (src: string): Promise<string> => {
         ctx.drawImage(img, 0, 0);
         
         const dataURL = canvas.toDataURL('image/jpeg', 0.8);
-        resolve(dataURL);
+        resolve({
+          dataURL,
+          width: img.width,
+          height: img.height
+        });
       } catch (error) {
         reject(error);
       }
@@ -205,15 +209,33 @@ export const generateCompleteBirthdayPDF = async (
         pdf.text(`Recuerdo ${i + 1}`, pageWidth / 2, currentY, { align: 'center' });
         currentY += 20;
         
-        // Cargar y agregar imagen
-        const imageBase64 = await loadImageAsBase64(photo.src);
+        // Cargar imagen con dimensiones originales
+        const imageData = await loadImageAsBase64(photo.src);
         
-        // Calcular dimensiones de la imagen para que quepa en la página
+        // Calcular dimensiones manteniendo proporción original
         const maxImageWidth = contentWidth - 20;
-        const maxImageHeight = 120;
+        const maxImageHeight = 140;
         
-        pdf.addImage(imageBase64, 'JPEG', margin + 10, currentY, maxImageWidth, maxImageHeight);
-        currentY += maxImageHeight + 15;
+        // Calcular aspect ratio
+        const aspectRatio = imageData.width / imageData.height;
+        
+        let finalWidth, finalHeight, imageX, imageY = currentY;
+        
+        if (aspectRatio > maxImageWidth / maxImageHeight) {
+          // Imagen más ancha - ajustar por ancho
+          finalWidth = maxImageWidth;
+          finalHeight = maxImageWidth / aspectRatio;
+        } else {
+          // Imagen más alta - ajustar por altura
+          finalHeight = maxImageHeight;
+          finalWidth = maxImageHeight * aspectRatio;
+        }
+        
+        // Centrar la imagen horizontalmente
+        imageX = margin + 10 + (maxImageWidth - finalWidth) / 2;
+        
+        pdf.addImage(imageData.dataURL, 'JPEG', imageX, imageY, finalWidth, finalHeight);
+        currentY += Math.max(finalHeight, maxImageHeight) + 15;
         
         // Caption de la foto
         if (photo.caption) {
@@ -232,13 +254,17 @@ export const generateCompleteBirthdayPDF = async (
         console.warn(`⚠️ No se pudo cargar la foto ${i + 1}:`, error);
         
         // Agregar placeholder si la foto no carga
+        const placeholderWidth = contentWidth - 20;
+        const placeholderHeight = 100;
+        const placeholderX = margin + 10;
+        
         pdf.setFillColor(240, 240, 240);
-        pdf.rect(margin + 10, currentY, contentWidth - 20, 80, 'F');
+        pdf.rect(placeholderX, currentY, placeholderWidth, placeholderHeight, 'F');
         
         pdf.setTextColor(120, 120, 120);
         pdf.setFontSize(12);
-        pdf.text('📷 Imagen no disponible', pageWidth / 2, currentY + 40, { align: 'center' });
-        currentY += 95;
+        pdf.text('📷 Imagen no disponible', pageWidth / 2, currentY + placeholderHeight / 2, { align: 'center' });
+        currentY += placeholderHeight + 15;
         
         if (photo.caption) {
           pdf.setFontSize(11);

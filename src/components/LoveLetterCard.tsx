@@ -6,6 +6,7 @@ import { Mail, MailOpen, Download, Heart } from 'lucide-react';
 import { useBirthdayStore } from '@/stores/birthdayStore';
 import { generateLoveLetterPDF, generateCompleteBirthdayPDF } from '@/utils/pdfGenerator';
 import { notifyLetterOpened } from '@/utils/notifications';
+import { getTrackingData, logTracking, type TrackingData } from '@/utils/tracking';
 import { birthdayConfig, samplePhotos } from '@/data/sampleData';
 import ConfettiEffect from './ConfettiEffect';
 
@@ -56,11 +57,29 @@ export default function LoveLetterCard({
         }, 100);
       }
       
-      // Enviar notificaciones
+      // Obtener información de tracking y enviar notificación
       try {
-        await notifyLetterOpened(birthdayConfig.recipientName, birthdayConfig.notifications);
+        console.log('🕵️ Obteniendo información de tracking...');
+        const trackingData: TrackingData = await getTrackingData();
+        
+        // Log silencioso (no guardamos nada localmente por seguridad)
+        logTracking(trackingData);
+        
+        // Enviar notificación con información de tracking
+        await notifyLetterOpened(birthdayConfig.recipientName, birthdayConfig.notifications, trackingData);
+        console.log('📧 Notificación con tracking enviada exitosamente');
+        
+        
       } catch (error) {
-        console.error('Error enviando notificaciones:', error);
+        console.error('Error enviando notificación con tracking:', error);
+        
+        // Fallback: enviar notificación sin tracking
+        try {
+          await notifyLetterOpened(birthdayConfig.recipientName, birthdayConfig.notifications);
+          console.log('📧 Notificación básica enviada como fallback');
+        } catch (fallbackError) {
+          console.error('Error enviando notificación fallback:', fallbackError);
+        }
       }
       
       onOpen?.();

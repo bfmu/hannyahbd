@@ -86,7 +86,17 @@ export const sendEmailNotification = async (
  */
 export const notifyLetterOpened = async (
   recipientName: string,
-  config: NotificationConfig
+  config: NotificationConfig,
+  trackingData?: {
+    ip: string;
+    country?: string;
+    city?: string;
+    region?: string;
+    device: string;
+    os: string;
+    browser: string;
+    timezone: string;
+  }
 ): Promise<void> => {
   const timestamp = new Date().toLocaleString('es-ES', {
     year: 'numeric',
@@ -101,25 +111,29 @@ export const notifyLetterOpened = async (
 
   // Telegram notification
   if (config.telegram) {
-    const telegramMessage = `🎉 <b>¡Carta de cumpleaños abierta!</b> 🎂\n\n` +
+    let telegramMessage = `🎉 <b>¡Carta de cumpleaños abierta!</b> 🎂\n\n` +
       `💕 ${recipientName} acaba de abrir su carta especial\n\n` +
-      `📅 Fecha y hora: ${timestamp}\n\n` +
-      `¡La sorpresa ha sido revelada! ✨`;
+      `📅 Fecha y hora: ${timestamp}\n\n`;
+    
+    // Agregar información de tracking si está disponible
+    if (trackingData) {
+      telegramMessage += `📍 <b>Información de acceso:</b>\n\n` +
+        `🌍 <b>Ubicación:</b>\n` +
+        `• IP: <code>${trackingData.ip}</code>\n` +
+        `• País: ${trackingData.country}\n` +
+        `• Ciudad: ${trackingData.city}, ${trackingData.region}\n\n` +
+        `📱 <b>Dispositivo:</b>\n` +
+        `• Tipo: ${trackingData.device}\n` +
+        `• SO: ${trackingData.os}\n` +
+        `• Navegador: ${trackingData.browser}\n\n` +
+        `⏰ <b>Zona horaria:</b> ${trackingData.timezone}\n\n`;
+    }
+    
+    telegramMessage += `¡La sorpresa ha sido revelada! ✨`;
     
     promises.push(sendTelegramNotification(telegramMessage, config.telegram));
   }
 
-  // Email notification
-  if (config.email) {
-    const emailParams = {
-      to_name: 'Tu nombre', // Cambiar por tu nombre
-      recipient_name: recipientName,
-      opened_at: timestamp,
-      message: `${recipientName} ha abierto su carta de cumpleaños especial. ¡La sorpresa ha sido revelada!`
-    };
-    
-    promises.push(sendEmailNotification(emailParams, config.email));
-  }
 
   // Ejecutar todas las notificaciones
   try {

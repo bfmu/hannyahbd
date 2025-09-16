@@ -21,6 +21,7 @@ export default function Home() {
     checkUnlockStatus();
   }, [checkUnlockStatus, setBirthdayDate]);
 
+
   const handleUnlock = () => {
     setShowConfetti(true);
   };
@@ -65,32 +66,6 @@ export default function Home() {
 
               {/* Contador */}
               <CountdownTimer onUnlock={handleUnlock} />
-
-              {/* Mensaje de espera */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-                className="mt-16 p-8 bg-white/50 backdrop-blur-sm rounded-3xl shadow-lg"
-              >
-                <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-                  🎁 Lo que te espera:
-                </h3>
-                <div className="grid md:grid-cols-3 gap-4 text-gray-600">
-                  <div className="flex items-center justify-center p-4">
-                    <span className="text-4xl mr-3">📸</span>
-                    <span>Nuestros momentos juntos</span>
-                  </div>
-                  <div className="flex items-center justify-center p-4">
-                    <span className="text-4xl mr-3">💌</span>
-                    <span>Una carta especial para ti</span>
-                  </div>
-                  <div className="flex items-center justify-center p-4">
-                    <span className="text-4xl mr-3">🎵</span>
-                    <span>Música que nos representa</span>
-                  </div>
-                </div>
-              </motion.div>
             </motion.div>
           ) : (
             <motion.div
