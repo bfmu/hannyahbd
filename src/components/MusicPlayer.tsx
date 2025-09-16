@@ -59,7 +59,7 @@ export default function MusicPlayer() {
       console.log('🎵 Reproduciendo música desde el store'); // Debug
       try {
         const playResult = soundRef.current.play();
-        if (playResult === false) {
+        if (typeof playResult !== 'number') {
           console.log('⚠️ Howler.js no pudo reproducir - posible problema de carga'); // Debug
         }
       } catch (error) {
